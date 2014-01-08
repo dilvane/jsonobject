@@ -146,10 +146,13 @@ class SetProperty(JsonContainerProperty):
         container.update(extension)
 
 
-def type_to_property(item_type, *args, **kwargs):
-    from .convert import MAP_TYPES_PROPERTIES
+def type_to_property(item_type, string_conversions=None, *args, **kwargs):
+    from .convert import MAP_TYPES_PROPERTIES, MAP_CONTAINER_TYPES_PROPERTIES
     if issubclass(item_type, JsonObject):
         return ObjectProperty(item_type, *args, **kwargs)
+    elif item_type in MAP_CONTAINER_TYPES_PROPERTIES:
+        return MAP_TYPES_PROPERTIES[item_type](
+            string_conversions=string_conversions, *args, **kwargs)
     elif item_type in MAP_TYPES_PROPERTIES:
         return MAP_TYPES_PROPERTIES[item_type](*args, **kwargs)
     else:

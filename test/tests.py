@@ -1,6 +1,6 @@
 from copy import deepcopy
 import unittest2
-from jsonobject.base import JsonObject, JsonArray
+from jsonobject.base import JsonObject, JsonArray, DefaultProperty
 from jsonobject import *
 from jsonobject.exceptions import DeleteNotAllowed, BadValueError, WrappingAttributeError
 
@@ -600,7 +600,15 @@ class DynamicConversionTestCase(unittest2.TestCase):
         self.assertEqual(foo.to_json()['my_dict'], {'a': {'b': string_date}})
         self.assertEqual(foo.my_dict, {'a': {'b': date_date}})
 
-    def test_wrapping(self):
+    def test_wrap(self):
+        foo = self.Foo({
+            'my_date': self.string_date,
+            'my_list': [1, 2, [self.string_date]],
+            'my_dict': {'a': {'b': self.string_date}},
+        })
+        self._test_dynamic_conversion(foo)
+
+    def test_init_wrapping(self):
         foo = self.Foo({
             'my_date': self.string_date,
             'my_list': [1, 2, [self.string_date]],
@@ -653,6 +661,26 @@ class DynamicConversionTestCase(unittest2.TestCase):
         foo = Foo()
         foo.my_list = list(foo.my_list)
         self.assertEqual(foo.to_json(), {'my_list': ['bar']})
+
+
+class TestCustomStringConversion(unittest2.TestCase):
+    def test_none(self):
+        class Foo(JsonObject):
+            d = DictProperty(string_conversions=())
+            l = ListProperty(string_conversions=())
+            x = DefaultProperty(string_conversions=())
+
+        d = {'a': '2011-01-01'}
+        l = ['2011-01-01']
+        x = '2011-01-01'
+        foo = Foo.wrap({
+            'd': d,
+            'l': l,
+            'x': x,
+        })
+        self.assertEqual(foo.d, d)
+        self.assertEqual(foo.l, l)
+        self.assertEqual(foo.x, x)
 
 
 class User(JsonObject):

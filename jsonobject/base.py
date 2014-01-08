@@ -111,8 +111,9 @@ class JsonContainerProperty(JsonProperty):
     _type = default = None
     container_class = None
 
-    def __init__(self, item_type=None, **kwargs):
+    def __init__(self, item_type=None, string_conversions=None, **kwargs):
         from convert import ALLOWED_PROPERTY_TYPES
+        self.string_conversions = string_conversions
         if inspect.isfunction(item_type):
             item_type = item_type()
         if hasattr(item_type, '_type'):
@@ -131,7 +132,15 @@ class JsonContainerProperty(JsonProperty):
 
     def wrap(self, obj):
         from properties import type_to_property
-        wrapper = type_to_property(self.item_type) if self.item_type else None
+        if self.item_type:
+            wrapper = type_to_property(
+                self.item_type,
+                string_conversions=self.string_conversions,
+            )
+        else:
+            wrapper = DefaultProperty(
+                string_conversions=self.string_conversions,
+            )
         return self.container_class(obj, wrapper=wrapper)
 
     def unwrap(self, obj):
@@ -151,9 +160,19 @@ class JsonContainerProperty(JsonProperty):
 
 
 class DefaultProperty(JsonProperty):
+
+    def __init__(self, *args, **kwargs):
+        from . import convert
+        self.string_conversions = kwargs.pop('string_conversions',
+                                             convert.STRING_CONVERSIONS)
+        super(DefaultProperty, self).__init__(*args, **kwargs)
+
     def wrap(self, obj):
         from . import convert
-        value = convert.value_to_python(obj)
+        value = convert.value_to_python(
+            obj,
+            string_conversions=self.string_conversions
+        )
         property_ = convert.value_to_property(value)
 
         if property_:

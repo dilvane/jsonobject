@@ -54,6 +54,12 @@ MAP_TYPES_PROPERTIES = {
     set: properties.SetProperty,
 }
 
+MAP_CONTAINER_TYPES_PROPERTIES = {
+    list: properties.ListProperty,
+    dict: properties.DictProperty,
+    set: properties.SetProperty,
+}
+
 
 def value_to_property(value):
     if value is None:
@@ -80,7 +86,7 @@ STRING_CONVERSIONS = (
 )
 
 
-def value_to_python(value, string_conversions=STRING_CONVERSIONS):
+def value_to_python(value, string_conversions=None):
     """
     convert encoded string values to the proper python type
 
@@ -92,6 +98,10 @@ def value_to_python(value, string_conversions=STRING_CONVERSIONS):
     Note: containers' items are NOT recursively converted
 
     """
+
+    if string_conversions is None:
+        string_conversions = STRING_CONVERSIONS
+
     if isinstance(value, basestring):
         convert = None
         for pattern, _convert in string_conversions:
