@@ -3,7 +3,7 @@ from .base import JsonObjectBase, _LimitedDictInterfaceMixin
 
 import decimal
 import datetime
-from six import integer_types, text_type, string_types
+from six import integer_types, text_type
 from . import properties
 import re
 

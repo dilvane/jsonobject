@@ -1,15 +1,12 @@
 from setuptools import setup
 import sys
-with open('README.md') as readme_file:
-    long_description = readme_file.read()
-
 setup(
-    name='jsonobject',
-    version='0.6.0b3',
-    author='Danny Roberts',
-    author_email='droberts@dimagi.com',
-    description='A library for dealing with JSON as python objects',
-    long_description=long_description,
+    name='paymill-jsonobject',
+    version='0.7.0beta',
+    author='Aleksandar Yalnazov',
+    author_email='aleksandar.yalnazov@paymill.de',
+    description='This is a fork of jsonobject library and is only intended to be used temporary until jsonobject 0.7.0 release is out.',
+    long_description='This is a fork of jsonobject library and is only intended to be used temporary until jsonobject 0.7.0 release is out.',
     url='https://github.com/dannyroberts/jsonobject',
     packages=['jsonobject'],
     install_requires=['six'],
